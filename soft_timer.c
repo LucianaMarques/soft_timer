@@ -13,6 +13,7 @@
 
 #include "inttypes.h"
 #include "time.h"
+#include "math.h"
 
 /*****************************************************************************
  * Private constants.
@@ -24,6 +25,14 @@
  #define ERASE_ONE 3
  #define SETUP 4
  #define DONE 5
+
+//MCU registers
+uint16_t timer_ctrl;
+uint16_t timer_cnt;
+uint16_t timer_rld;
+
+//MCU timer's PSC
+float PSC;
 
 /*****************************************************************************
  * Private macros.
@@ -54,6 +63,19 @@ typedef struct node{
  //soft timers callback functions
  void callback(node_t * timer);
 
+//MCU's timer setup
+void init_MCU_timer();
+
+//Update MCU's timer
+void update_MCU_timer();
+
+//setup time passing variables
+void time_setup();
+
+//all timers working
+void timers_working();
+
+
 /*****************************************************************************
  * Global variables.
  *****************************************************************************/
@@ -71,6 +93,13 @@ int num_timers = 0;
 uint16_t timer_ctrl;
 uint16_t timer_cnt;
 uint16_t timer_rld;
+
+//Variables and methods used to control time (major reference is "time.h" library
+clock_t start, end;
+float time1 = 0;
+
+//Time to complete a clock cycle
+float clock_time;
 
 /*****************************************************************************
  * Bodies of public functions.
@@ -301,5 +330,46 @@ void callback(node_t * timer)
     else
     {
         timer->is_active = false;
+    }
+}
+
+void init_MCU_timer()
+{
+    //Configuring the MCU's physical timer
+    printf("Please type TIMER_CTRL Register: \n");
+    scanf("%" SCNd16, &timer_ctrl);
+    printf("Please type TIMER_RLD Register: \n");
+    scanf("%" SCNd16, &timer_rld);
+
+    //sets TIMER_CNT Register
+    timer_cnt = timer_rld;
+
+    //sets MCU Timer's PSC
+    PSC = (timer_ctrl >> 2) & 1;
+}
+
+void time_setup()
+{
+    float frq = TIMER_CLK_HZ/pow(10,PSC);
+    clock_time = 1/frq;
+    start = clock();
+    end = clock();
+    time1 = (float)(end - start)*clock_time;
+}
+
+void timers_working()
+{
+    while(timer_cnt > 0)
+    {
+        //keeps tracking time at every clock_time
+        end = clock();
+        time1 = (float)(end - start)*clock_time;
+
+        //if clock_time achieved, update timers
+        if (time1 > clock_time)
+        {
+            update_timers();
+            start = clock();
+        }
     }
 }
