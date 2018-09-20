@@ -60,8 +60,8 @@ typedef struct node{
  //update all timers' CNTs
  void update_timers(void);
 
- //soft timers callback functions
- void callback(node_t * timer);
+//soft timers callback functions
+soft_timer_status_t callback(node_t * timer);
 
 //MCU's timer setup
 void init_MCU_timer();
@@ -157,7 +157,20 @@ void soft_timer_init(void)
         }
         if (t == SETUP)
         {
-
+            int i, reload, repeat;
+            printf("Please type the number of timer to be setted: \n");
+            scanf("%d", &i);
+            printf("Please type reload value: \n");
+            scanf("%d", &reload);
+            printf("Should it repeat? 0-no 1-yes\n");
+            scanf("%d", &repeat);
+            node_t* current = head;
+            //suppose that user won't try to access a timer that's not on the linked list
+            for (int j = 1; j < i; j++)
+            {
+                current = current->next;
+            }
+            soft_timer_status_t c = soft_timer_set(&current->timer, &callback(), reload, repeat);
         }
         if (t == DONE)
         {
@@ -218,6 +231,7 @@ soft_timer_status_t soft_timer_set(soft_timer_t *p_timer, soft_timer_callback_t 
         }
         current->reload_ms_n = reload_ms;
         current->repeat_n = repeat;
+        current->callback_n = callback();
     }
     return status;
 }
@@ -320,8 +334,9 @@ void update_timers(void)
     }
 }
 
-void callback(node_t * timer)
+soft_timer_status_t callback(node_t * timer)
 {
+    soft_timer_status_t status = SOFT_TIMER_STATUS_SUCCESS;
     printf("Finished timer");
     if (timer->repeat_n == true)
     {
@@ -331,6 +346,7 @@ void callback(node_t * timer)
     {
         timer->is_active = false;
     }
+    return status;
 }
 
 void init_MCU_timer()
