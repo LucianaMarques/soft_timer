@@ -57,11 +57,11 @@ typedef struct node{
  * Prototypes for private functions.
  *****************************************************************************/
 
- //update all timers' CNTs
- void update_timers(void);
+//update all timers' CNTs
+void update_timers(void);
 
 //soft timers callback functions
-soft_timer_status_t callback(node_t * timer);
+void callback(soft_timer_t * timer);
 
 //MCU's timer setup
 void init_MCU_timer();
@@ -170,8 +170,8 @@ void soft_timer_init(void)
             {
                 current = current->next;
             }
-            soft_timer_callback_t callback;
-            soft_timer_status_t c = soft_timer_set(&current->timer, callback , reload, repeat);
+            soft_timer_callback_t callb = callback(current->timer);
+            soft_timer_status_t c = soft_timer_set(&current->timer, callb , reload, repeat);
         }
         if (t == DONE)
         {
@@ -251,7 +251,7 @@ soft_timer_status_t soft_timer_start(soft_timer_t *p_timer)
     return status;
 }
 
-soft_timer_status_t soft_timer_stop(soft_timer_t *p_timer)
+soft_timer_status_t soft_timer_stop(soft_timer_t * p_timer)
 {
     soft_timer_status_t status;
 
@@ -335,19 +335,23 @@ void update_timers(void)
     }
 }
 
-soft_timer_status_t callback(node_t * timer)
+void callback(soft_timer_t * timer)
 {
-    soft_timer_status_t status = SOFT_TIMER_STATUS_SUCCESS;
     printf("Finished timer");
-    if (timer->repeat_n == true)
+    node_t * current = head;
+    //assuming user won't try to access a timer that doesn't exists
+    while (current->timer != timer)
     {
-        timer->cnt_n = timer_rld;
+        current = current->next;
+    }
+    if (current->repeat_n == true)
+    {
+        current->cnt_n = timer_rld;
     }
     else
     {
-        timer->is_active = false;
+        current->is_active = false;
     }
-    return status;
 }
 
 void init_MCU_timer()
