@@ -170,7 +170,8 @@ void soft_timer_init(void)
             {
                 current = current->next;
             }
-            soft_timer_status_t c = soft_timer_set(&current->timer, &callback(), reload, repeat);
+            soft_timer_callback_t callback;
+            soft_timer_status_t c = soft_timer_set(&current->timer, callback , reload, repeat);
         }
         if (t == DONE)
         {
@@ -231,7 +232,7 @@ soft_timer_status_t soft_timer_set(soft_timer_t *p_timer, soft_timer_callback_t 
         }
         current->reload_ms_n = reload_ms;
         current->repeat_n = repeat;
-        current->callback_n = callback();
+        current->callback_n = timeout_cb;
     }
     return status;
 }
