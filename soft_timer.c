@@ -20,11 +20,11 @@
  *****************************************************************************/
 
 //constants to support menu in soft_timer_init()
- #define NEW_SOFT 1
- #define ALL_SOFT 2
- #define ERASE_ONE 3
- #define SETUP 4
- #define DONE 5
+#define NEW_SOFT 1
+#define ALL_SOFT 2
+#define ERASE_ONE 3
+#define SETUP 4
+#define DONE 5
 
 //MCU registers
 uint16_t timer_ctrl;
@@ -74,7 +74,6 @@ void time_setup();
 
 //all timers working
 void timers_working();
-
 
 /*****************************************************************************
  * Global variables.
@@ -153,7 +152,9 @@ void soft_timer_init(void)
         }
         if (t == ERASE_ONE)
         {
-
+            int i;
+            printf("Please type the number of timer to be setted: \n");
+            scanf("%d", &i);
         }
         if (t == SETUP)
         {
@@ -172,6 +173,7 @@ void soft_timer_init(void)
             }
             soft_timer_callback_t callb = callback(current->timer);
             soft_timer_status_t c = soft_timer_set(&current->timer, callb , reload, repeat);
+            printf("%s",c);
         }
         if (t == DONE)
         {
@@ -292,7 +294,6 @@ void soft_timer_destroy(soft_timer_t **pp_timer)
         current->next = NULL;
     }
 }
-
 
 /*****************************************************************************
  * Bodies of private functions.
