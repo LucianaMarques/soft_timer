@@ -367,13 +367,16 @@ void timers_working(void)
         if (time1 > clock_time)
         {
             update_timers();
-            if (timer_cnt == 0 && ((timer_ctrl >> 2) & 1) == 1)
+            if (timer_cnt == 0)
             {
-                timer_cnt = timer_rld;
-            }
-            if ((timer_ctrl >> 15) & 1)
-            {
-                hmcu_timer_irq_handler();
+                if ((timer_ctrl >> 2) & 1)
+                {
+                    timer_cnt = timer_rld;
+                }
+                if (timer_ctrl & 1)
+                {
+                    hmcu_timer_irq_handler();
+                }
             }
             start = clock();
         }
