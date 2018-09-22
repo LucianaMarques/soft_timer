@@ -22,9 +22,8 @@
 //constants to support menu in soft_timer_init()
 #define NEW_SOFT 1
 #define ALL_SOFT 2
-#define ERASE_ONE 3
-#define SETUP 4
-#define DONE 5
+#define SETUP 3
+#define DONE 4
 
 //MCU registers
 uint16_t timer_ctrl;
@@ -75,6 +74,9 @@ void time_setup();
 //all timers working
 void timers_working();
 
+//find a certain timer in the linked list
+void activate_timers();
+
 /*****************************************************************************
  * Global variables.
  *****************************************************************************/
@@ -114,9 +116,8 @@ void soft_timer_init(void)
         printf("Please select what to do next:\n");
         printf("1 - Create soft timer\n");
         printf("2 - See all soft timers\n");
-        printf("3 - Delete one soft timer\n");
-        printf("4 - Setup soft timer");
-        printf("5 - Setup done\n");
+        printf("3 - Setup soft timer");
+        printf("4 - Setup done\n");
         scanf("%d", &t);
         if (t == NEW_SOFT)
         {
@@ -149,12 +150,6 @@ void soft_timer_init(void)
                     i++;
                 }
             }
-        }
-        if (t == ERASE_ONE)
-        {
-            int i;
-            printf("Please type the number of timer to be setted: \n");
-            scanf("%d", &i);
         }
         if (t == SETUP)
         {
@@ -291,7 +286,8 @@ void soft_timer_destroy(soft_timer_t **pp_timer)
             last = current;
             current = current->next;
         }
-        current->next = NULL;
+        last->next = current->next;
+        current = NULL;
     }
 }
 
@@ -381,6 +377,7 @@ void time_setup()
 
 void timers_working()
 {
+    activate_timers();
     while(timer_cnt > 0)
     {
         //keeps tracking time at every clock_time
@@ -393,5 +390,15 @@ void timers_working()
             update_timers();
             start = clock();
         }
+    }
+}
+
+void activate_timers()
+{
+    node_t * node = head;
+    while (node != NULL)
+    {
+        node->is_active = true;
+        node = node->next;
     }
 }
