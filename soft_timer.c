@@ -75,7 +75,10 @@ void timers_working(void);
 //find a certain timer in the linked list
 void activate_timers(void);
 
-//destroy all soft timers
+//stop all timers
+void stop_timers(void);
+
+//destroy soft timers that havent already stopped
 void destroy_soft_timers(void);
 
 /*****************************************************************************
@@ -109,6 +112,10 @@ float frq;
 /*****************************************************************************
  * Bodies of public functions.
  *****************************************************************************/
+void hmcu_timer_irq_handler(void)
+{
+    printf("irq requested\n");
+}
 
 void soft_timer_init(void)
 {
@@ -220,7 +227,7 @@ soft_timer_status_t soft_timer_start(soft_timer_t *p_timer)
     return status = SOFT_TIMER_STATUS_SUCCESS;
 }
 
-soft_timer_status_t soft_timer_stop(soft_timer_t * p_timer)
+soft_timer_status_t soft_timer_stop(soft_timer_t *p_timer)
 {
     soft_timer_status_t status = SOFT_TIMER_STATUS_SUCCESS;
 
@@ -314,16 +321,24 @@ void callback(soft_timer_t * timer)
 void init_MCU_timer(void)
 {
     //Configuring the MCU's physical timer
-    printf("Please type TIMER_CTRL Register: \n");
-    scanf("%" SCNd16, &timer_ctrl);
-    printf("Please type TIMER_RLD Register: \n");
+    printf("Please type PRSC value: \n");
+    scanf("%f", &PSC);
+    printf("Should it repeat? 0-no 1-yes\n");
+    int rep;
+    scanf("%d", &rep);
+    printf("Enable Timer IRQ?\n");
+    int irq;
+    scanf("%d", &irq);
+
+    //defining TIMER_CTRL
+    timer_ctrl = (uint16_t)irq + ((uint16_t)rep << 2) + ((uint16_t)PSC << 3);
+
+    //defining TIMER_RLD
+    printf("Please type TIMER_RLD Register's value: \n");
     scanf("%" SCNd16, &timer_rld);
 
     //sets TIMER_CNT Register
     timer_cnt = timer_rld;
-
-    //sets MCU Timer's PSC
-    PSC = ((timer_ctrl >> 3) & 3);
 }
 
 void time_setup(void)
@@ -356,6 +371,10 @@ void timers_working(void)
             {
                 timer_cnt = timer_rld;
             }
+            if ((timer_ctrl >> 15) & 1)
+            {
+                hmcu_timer_irq_handler();
+            }
             start = clock();
         }
     }
@@ -375,6 +394,21 @@ void activate_timers(void)
         }
         i++;
         node = node->next;
+    }
+}
+
+void stop_timers()
+{
+    //stop hmcu
+    timer_ctrl = timer_ctrl - 2;
+
+    //stop soft timers
+    int i = 0;
+    node_t * current = head;
+    while (i < active)
+    {
+        soft_timer_stop(current->timer);
+        i++;
     }
 }
 
