@@ -76,7 +76,7 @@ void timers_working(void);
 void activate_timers(void);
 
 //destroy all soft timers
-soft_timer_status_t destroy_soft_timers(void);
+void destroy_soft_timers(void);
 
 /*****************************************************************************
  * Global variables.
@@ -324,8 +324,6 @@ void init_MCU_timer(void)
 
     //sets MCU Timer's PSC
     PSC = ((timer_ctrl >> 3) & 3);
-    //printf("PSC: %lf\n", PSC);
-    //printf("RELOAD? %d\n", ((timer_ctrl >> 2)&1));
 }
 
 void time_setup(void)
@@ -380,14 +378,14 @@ void activate_timers(void)
     }
 }
 
-soft_timer_status_t destroy_soft_timers(void)
+void destroy_soft_timers(void)
 {
-    soft_timer_status_t s;
+    int i = 0;
     node_t * current = head;
-    while (current!=NULL)
+    while (i < active)
     {
-        free(current);
-        current = current->next;
+        soft_timer_destroy(&current->timer);
+        i++;
     }
-    return s = SOFT_TIMER_STATUS_SUCCESS;
+    printf("ALL SOFT TIMERS DESTROYED\n");
 }
