@@ -18,5 +18,9 @@ int main()
 
     timers_working();
 
+    stop_timers();
+
+    destroy_soft_timers();
+
     return 0;
 }
