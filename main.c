@@ -7,12 +7,14 @@
 
 int main()
 {
+    //freopen("output.txt","w",stdout);
+
     //Initializes and sets the MCU's timer
     init_MCU_timer();
 
-    soft_timer_init();
-
     time_setup();
+
+    soft_timer_init();
 
     timers_working();
 

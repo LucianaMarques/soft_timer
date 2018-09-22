@@ -21,9 +21,7 @@
 
 //constants to support menu in soft_timer_init()
 #define NEW_SOFT 1
-#define ALL_SOFT 2
-#define SETUP 3
-#define DONE 4
+#define DONE 2
 
 //MCU registers
 uint16_t timer_ctrl;
@@ -45,8 +43,8 @@ float PSC;
 typedef struct node{
     soft_timer_t* timer;
     struct node * next;
-    uint32_t cnt_n;
-    uint32_t reload_ms_n;
+    uint16_t cnt_n;
+    uint16_t reload_ms_n;
     bool repeat_n;
     bool is_active;
     soft_timer_callback_t callback_n;
@@ -77,6 +75,9 @@ void timers_working(void);
 //find a certain timer in the linked list
 void activate_timers(void);
 
+//destroy all soft timers
+soft_timer_status_t destroy_soft_timers(void);
+
 /*****************************************************************************
  * Global variables.
  *****************************************************************************/
@@ -102,6 +103,9 @@ float time1 = 0;
 //Time to complete a clock cycle
 float clock_time;
 
+//Timer clock frequency
+float frq;
+
 /*****************************************************************************
  * Bodies of public functions.
  *****************************************************************************/
@@ -115,59 +119,23 @@ void soft_timer_init(void)
     {
         printf("Please select what to do next:\n");
         printf("1 - Create soft timer\n");
-        printf("2 - See all soft timers\n");
-        printf("3 - Setup soft timer");
-        printf("4 - Setup done\n");
+        printf("2 - Setup done\n");
         scanf("%d", &t);
         if (t == NEW_SOFT)
         {
             soft_timer_t * new_timer;
             soft_timer_create(&new_timer);
-        }
-        if (t == ALL_SOFT)
-        {
-            if (head == NULL)
-            {
-                printf("No timer created yet\n");
-            }
-            else
-            {
-                node_t * current = head;
-                int i = 1;
-                while (current!=NULL)
-                {
-                    printf("Timer ");
-                    printf("%d", i);
-                    if (current->is_active == true)
-                    {
-                        printf(": active\n");
-                    }
-                    else
-                    {
-                        printf(": not active\n");
-                    }
-                    current = current->next;
-                    i++;
-                }
-            }
-        }
-        if (t == SETUP)
-        {
-            int i, reload, repeat;
-            printf("Please type the number of timer to be setted: \n");
-            scanf("%d", &i);
+
+            printf("SETTING CREATED TIMER\n");
+            uint32_t reload, r;
+            bool repeat;
             printf("Please type reload value: \n");
-            scanf("%d", &reload);
+            scanf("%u", &reload);
             printf("Should it repeat? 0-no 1-yes\n");
-            scanf("%d", &repeat);
-            node_t* current = head;
-            //suppose that user won't try to access a timer that's not on the linked list
-            for (int j = 1; j < i; j++)
-            {
-                current = current->next;
-            }
-            //soft_timer_callback_t callb = callback(current->timer);
-            soft_timer_status_t c = soft_timer_set(current->timer, callback , reload, repeat);
+            scanf("%u", &r);
+            if (r == 0) repeat = false;
+            else repeat = true;
+            soft_timer_status_t c = soft_timer_set(new_timer, callback , reload, repeat);
             if (c == SOFT_TIMER_STATUS_SUCCESS)
             {
                 printf("Soft timer set success\n");
@@ -302,19 +270,8 @@ void soft_timer_destroy(soft_timer_t **pp_timer)
 void update_timers(void)
 {
     //update physical timer
-    if (timer_cnt > 0)
-    {
-        timer_cnt --;
-    }
-    else
-    {
-        // checks RPT bit
-        if (((timer_ctrl >> 2) & 1) == 1)
-        {
-            timer_cnt = timer_rld;
-        }
-    }
-    printf("HMCU CNT: %SCNd16\n", timer_ctrl);
+    timer_cnt --;
+    printf("HMCU CNT: %u\n", timer_cnt);
     //update soft timers
     node_t * current = head;
     int i = 1;
@@ -334,7 +291,7 @@ void update_timers(void)
                 }
                 else
                 {
-                    soft_timer_status c = soft_timer_stop(current->timer);
+                    soft_timer_status_t c = soft_timer_stop(current->timer);
                     if (c == SOFT_TIMER_STATUS_SUCCESS)
                     {
                         printf("TIMER %d STOPPED\n",i);
@@ -342,9 +299,10 @@ void update_timers(void)
                 }
                 callback(current->timer);
             }
-            printf("TIMER %d CNT: %SCNd16\n", current->cnt_n);
+            printf("TIMER %d CNT: %u\n", i, current->cnt_n);
         }
         current = current->next;
+        i++;
     }
 }
 
@@ -365,13 +323,18 @@ void init_MCU_timer(void)
     timer_cnt = timer_rld;
 
     //sets MCU Timer's PSC
-    PSC = (timer_ctrl >> 2) & 1;
+    PSC = ((timer_ctrl >> 3) & 3);
+    //printf("PSC: %lf\n", PSC);
+    //printf("RELOAD? %d\n", ((timer_ctrl >> 2)&1));
 }
 
 void time_setup(void)
 {
-    float frq = TIMER_CLK_HZ/pow(10,PSC);
+    printf("SETTING UP TIME CHRACTERISTICS\n");
+    frq = TIMER_CLK_HZ/pow(10,PSC);
+    printf("FREQUENCY: %lf\n", frq);
     clock_time = 1/frq;
+    printf("TIME IN A CLOCK CYCLE: %lf seconds \n", clock_time);
     start = clock();
     end = clock();
     time1 = (float)(end - start)*clock_time;
@@ -385,11 +348,16 @@ void timers_working(void)
         //keeps tracking time at every clock_time
         end = clock();
         time1 = (float)(end - start)*clock_time;
+        printf("Current time: %lf \n", time1);
 
         //if clock_time achieved, update timers
         if (time1 > clock_time)
         {
             update_timers();
+            if (timer_cnt == 0 && ((timer_ctrl >> 2) & 1) == 1)
+            {
+                timer_cnt = timer_rld;
+            }
             start = clock();
         }
     }
@@ -402,7 +370,7 @@ void activate_timers(void)
     int i = 1;
     while (node != NULL)
     {
-        soft_timer_status c = soft_timer_start(node->timer);
+        soft_timer_status_t c = soft_timer_start(node->timer);
         if (c == SOFT_TIMER_STATUS_SUCCESS)
         {
             printf("SOFT TIMER %d STARTED \n", i);
@@ -410,4 +378,16 @@ void activate_timers(void)
         i++;
         node = node->next;
     }
+}
+
+soft_timer_status_t destroy_soft_timers(void)
+{
+    soft_timer_status_t s;
+    node_t * current = head;
+    while (current!=NULL)
+    {
+        free(current);
+        current = current->next;
+    }
+    return s = SOFT_TIMER_STATUS_SUCCESS;
 }
