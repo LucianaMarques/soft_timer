@@ -181,4 +181,12 @@ Destroy all soft timers using the soft_timer_destroy(** p_timer) function.
 
 ## A simple program test
 
-This test 
+A simple program test can be seen on output.txt. The program was run on the commandline and the outputs were written on the file with the following:
+
+$ ./soft_timer >outuput.txt
+
+The user's input still needed to be done on the command line, though. 
+
+The PRSC value was 3, RELOAD value was 10 and Timer IRQ was enabled. Only one soft timer was created, with reload value of 5. None of the timers were setted to repeat.
+
+

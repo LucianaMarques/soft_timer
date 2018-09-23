@@ -23,14 +23,6 @@
 #define NEW_SOFT 1
 #define DONE 2
 
-//MCU registers
-uint16_t timer_ctrl;
-uint16_t timer_cnt;
-uint16_t timer_rld;
-
-//MCU timer's PSC
-float PSC;
-
 /*****************************************************************************
  * Private macros.
  *****************************************************************************/
@@ -108,6 +100,9 @@ float clock_time;
 
 //Timer clock frequency
 float frq;
+
+//MCU timer's PSC
+float PSC;
 
 /*****************************************************************************
  * Bodies of public functions.

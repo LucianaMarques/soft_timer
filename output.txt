@@ -1,0 +1,77 @@
+Please type PRSC value: 
+Should it repeat? 0-no 1-yes
+Enable Timer IRQ?
+Please type TIMER_RLD Register's value: 
+SETTING UP TIME CHRACTERISTICS
+FREQUENCY: 1.000000
+TIME IN A CLOCK CYCLE: 1.000000 seconds 
+Initializing soft timer module 
+Please select what to do next:
+1 - Create soft timer
+2 - Setup done
+SOFT TIMER CREATE SUCCES
+SETTING CREATED TIMER
+Please type reload value: 
+Should it repeat? 0-no 1-yes
+Soft timer set success
+Please select what to do next:
+1 - Create soft timer
+2 - Setup done
+DONE CONFIGURING SOFT TIMERS
+PHYSICAL TIMER ACTIVATED
+ACTIVATING ALL SOFT TIMERS CREATED
+SOFT TIMER 1 STARTED 
+Current time: 80.000000 
+HMCU CNT: 9
+TIMER 1 CNT: 4
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 8
+TIMER 1 CNT: 3
+Current time: 0.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 7
+TIMER 1 CNT: 2
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 6
+TIMER 1 CNT: 1
+Current time: 0.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 5
+TIMER 1 CNT: 0
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 4
+TIMER 1 STOPPED
+Finished timer
+TIMER 1 CNT: 0
+Current time: 0.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 3
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 2
+Current time: 0.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 1
+Current time: 0.000000 
+Current time: 1.000000 
+Current time: 1.000000 
+Current time: 2.000000 
+HMCU CNT: 0
+irq requested
+ALL SOFT TIMERS DESTROYED
