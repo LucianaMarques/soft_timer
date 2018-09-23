@@ -25,9 +25,9 @@ Then, type "make". This should create a soft_timer binary file.
 Then execute the created file.
 To exclude the binary file after execution, just type make clean.
 
-cd <directory>
-make
-./soft_timer
-make clean
+⋅⋅⋅cd "directory"
+⋅⋅⋅make
+⋅⋅⋅./soft_timer
+⋅⋅⋅make clean
 
 
