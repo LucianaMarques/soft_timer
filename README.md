@@ -1,8 +1,8 @@
 # soft_timer
 
-This program was written to simulate a multiplexed timer from an hypotetical MCU, for part of the interviewing process for an embbed programming internship at Dev Tecnologia. 
+This program was written to simulate a multiplexed timer from an hypotetical MCU, as part of the interviewing process for an embbed programming internship at Dev Tecnologia. 
 
-It consists on four main files:
+It consists on three main files:
 
 * hmcu_timer.h
  Contains the hypotetical MCU's general characteristics, registers and methods.
@@ -13,7 +13,7 @@ It consists on four main files:
 
 The first two files were provided by the company and not modified by the candidate. 
 
-The second two were used for implementation and testing. 
+The last file was used for implementation and testing. 
 
 There is also a simple Makefile provided, created by the candidate. 
 
