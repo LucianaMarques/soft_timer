@@ -90,7 +90,10 @@ The cycle of life of a soft timer consists on:
 
 To keep track of time, the program uses the c library "time.h".
 
-When the PRSC value is inputed by the user, the physical timer's frequency is 
+When the PRSC value is inputed by the user, the physical timer's frequency is calculated and thus also the clock cycle time.
+
+The function that keeps the timers working is timers_ working() in source file soft_timer.c. It keeps calculating how much time has passed since the last update. Once this time is equal or greater than the clock cycle time, all timer are updated (with update _timer() function) and time counting restarts.   
+ 
 
 #### Some Engineering Trade-Offs
 
@@ -107,6 +110,38 @@ The sorce file soft_timer.c contains all the required functions in its header, p
 The bodies and the description of all these functions can be found below.
 
 ### Global functions
+
+For the complete body functions, please refer to lines 114-271 in soft_ timer.c file. 
+
+The global functions that required defining were:
+
+* void hmcu_timer_irq_handler(void);
+
+Function used by physical timer when the countdown reaches zero. Can be enabled or not.
+
+* void soft_timer_init(void)
+
+This function initialized the soft timers module. It has a running menu in which the user can create and set new soft timers. 
+
+* void soft_timer_create(soft_timer_t **pp_timer)
+
+Basically creates another soft timer. This is done by creating a new node (if head is already defined) in the general soft timer linked list. 
+
+* soft_timer_status_t soft_timer_set(soft_timer_t *p_timer, soft_timer_callback_t  timeout_cb, uint32_t reload_ms, bool repeat)
+
+This function is called upon creating a new soft timer. It is used to set it, defining the callback function, the reload value and if it should repeat or not. As for the callback function, there is only one avaiable in the whole system, but it is noted that there could be more callback functions avaiable depending on the soft timer's part in the MCU's behavior, and the user could be given the choice to select one of these callback functions.
+
+* soft_timer_status_t soft_timer_start(soft_timer_t *p_timer)
+
+Activates an specific soft timer. It searches on the linked list for this specific timer and changes the boolean value of "is_active" to true.
+
+* soft_timer_status_t soft_timer_stop(soft_timer_t *p_timer)
+
+Stops an specific soft timer. It searches on the linked list for this specific timer and changes the boolean value of "is_active" to false.
+
+* void soft_timer_destroy(soft_timer_t **pp_timer)
+
+Destroys a soft timer, basically removing it from the linked list.
 
 ### Private functions
 
