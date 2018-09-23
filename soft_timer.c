@@ -11,9 +11,9 @@
 #include "soft_timer.h"
 #include "hmcu_timer.h"
 
-#include "inttypes.h"
-#include "time.h"
-#include "math.h"
+#include "/usr/include/inttypes.h"
+#include "/usr/include/time.h"
+#include "/usr/include/math.h"
 
 /*****************************************************************************
  * Private constants.
@@ -273,6 +273,26 @@ void soft_timer_destroy(soft_timer_t **pp_timer)
 /*****************************************************************************
  * Bodies of private functions.
  *****************************************************************************/
+
+int main()
+{
+    //freopen("output.txt","w",stdout);
+
+    //Initializes and sets the MCU's timer
+    init_MCU_timer();
+
+    time_setup();
+
+    soft_timer_init();
+
+    timers_working();
+
+    stop_timers();
+
+    destroy_soft_timers();
+
+    return 0;
+}
 
 void update_timers(void)
 {
