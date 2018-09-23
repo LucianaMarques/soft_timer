@@ -145,4 +145,40 @@ Destroys a soft timer, basically removing it from the linked list.
 
 ### Private functions
 
+The following functions were created to support the MCU's behavior. For the functions full bodies please refer to lines 277-448 in source file soft_ timer.c
+
+* void update_timers(void)
+
+This function basically updates the CNT values of all timers, both physical and soft. It is called when the system detected that a clock cycle time has passed.
+
+* void callback(soft_timer_t * timer)
+
+The callback function used by soft timers. As said before, there is only one callback function provided. However, the system could provide more callback functions and the user could choose which one to use in the soft timer set function.
+
+* void init_MCU_timer(void)
+
+Takes input for PRSC, whether the physical timer shoudl restart or not, RELOAD value and if TIMER IRQ should be enabled.
+
+* void time_setup(void)
+
+Calculates the system's frequency and clock cycle time. Initiates the time passing trackdown.
+
+* void timers_working(void)
+
+Enables timers to work. First, it activates them, and while CNT is not zero, it keeps updating all timers' cnts when a clock cycle ends. If the physical timer is set to reload, once CNT is zero it sets CNT to RELOAD value and continues the loop.
+
+* void activate_timers(void)
+
+Starts all soft timers using soft_timer_start(* p_timer) function.
+
+* void stop_timers()
+
+Stops all soft timers using soft_timer_stop(* p_timer) function.
+
+* void destroy_soft_timers(void)
+
+Destroy all soft timers using the soft_timer_destroy(** p_timer) function.
+
 ## A simple program test
+
+This test 

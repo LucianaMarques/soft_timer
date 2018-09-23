@@ -405,6 +405,11 @@ void timers_working(void)
 
 void activate_timers(void)
 {
+	// activating physical timer
+	timer_ctrl = timer_ctrl + 2;
+	printf("PHYSICAL TIMER ACTIVATED\n");
+
+	//activating all soft timers
     printf("ACTIVATING ALL SOFT TIMERS CREATED\n");
     node_t * node = head;
     int i = 1;
