@@ -55,16 +55,24 @@ The MCU's behavior is defined accordingly to the main() function defined in the 
 
 All these steps are defined in the main() function. 
 
-### Project's Functions and files 
+### Project's Internal Organization
 
-In the header file soft_timer.h, there were some declared function which were expected to be written in the source file.
+### Some Engineering Trade-Offs
+
+Since using c programming language was a requirement, this solution was made using a linked list to store all the soft timers created. 
+This decision was made due to implementation issues: a linked list can be easily implemented using structs.  
+However, it is noted that a solution using hash tables would possibly be better as for complexity, but the linked lists were prefered in terms of deadlines (there aren't much already implemented hash table resourses in c language, differently from c++). 
+
+## Project's Functions and files 
+
+In the provided header files, there were some declared function which were expected to be written in the source file.
 
 The sorce file soft_timer.c contains all the required functions in its header, plus some private functions used to implement the hypotetical MCU's behavior.
 
-Below there are the body and the description of all these functions:
+The bodies and the description of all these functions can be found below.
 
 ### Global functions
 
 ### Private functions
 
-
+## A simple program test
