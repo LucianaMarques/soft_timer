@@ -39,7 +39,7 @@ This section discusses the implementation of the hypotetical MCU's behavior and 
 
 ### MCU's behavior
 
-The MCU's behavior is defined accordingly to the main() function defined in the source file soft_timer.c. It can be described in the following simple steps:
+The MCU's behavior is defined accordingly to the main() function defined in the source file soft_timer.c. It can be defined with the following simple steps:
 
 * Define the physical timer characteristics, that is, define the Prescaler, the reload value, whether it repeats or not and if IRQ handler if Timeout IRQ handler is required. 
 
@@ -57,7 +57,42 @@ All these steps are defined in the main() function.
 
 ### Project's Internal Organization
 
-### Some Engineering Trade-Offs
+This project consists in the physical timer and the possible software timers. 
+
+Some assumptions adopted:
+
+1. All timers (both physical and soft) should start together;
+2. Soft timers will be updated at the same time as the physical timer (following the system's clock frequency);
+
+#### Physical timer
+
+To implement and test the physical timer behavior, there are three extern variables (provided in the header file hmcu_timer.h) that simulate its main registers (CTRL, CNT and RELOAD). 
+
+In order to set CTRL's value, the user inputs the PRSC value, whether the timer should repeat or not and whether the timer's IRQ Handler should be enabled or not. This set is done in the init_ MCU _ timer() function (private functions defined in source file soft_timer.c).
+
+#### Soft timer
+
+The program allows the user to create and set a certain amount of timers, defined in SOFT_ TIMER _ MAX _ INSTANCES in header file soft_timer.h 
+
+To keep track of how many timers should run in the program and their characteristics, there is a structure defined with all relevant features (cnt, reload value, callback function, etc) that behaves as a node in a linked list. The system has a head node (initially NULL) that is later redefined as the user creates the first soft timer, and as the following soft timers are creted, this list increases. 
+
+The soft timer behavior is also defined with the global function that required to be defined, like soft_ timer _ init(), soft _ timer _ create (), among others (better described in the next section). 
+
+The cycle of life of a soft timer consists on:
+
+* soft timer is created
+* soft timer is activated
+* soft timer runs
+* soft timer stops
+* soft timer is destroyed
+
+#### Time Management
+
+To keep track of time, the program uses the c library "time.h".
+
+When the PRSC value is inputed by the user, the physical timer's frequency is 
+
+#### Some Engineering Trade-Offs
 
 Since using c programming language was a requirement, this solution was made using a linked list to store all the soft timers created. 
 This decision was made due to implementation issues: a linked list can be easily implemented using structs.  
