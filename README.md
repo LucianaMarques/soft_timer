@@ -9,7 +9,7 @@ It consists on four main files:
 3. soft_timer.c
 4. main.c
 
-The first two files were provided by the company and not modified by the candidate. The second two were used for implementation and testing. There is also a Makefile provided, created by the candidate.
+The first two files were provided by the company and not modified by the candidate. The second two were used for implementation and testing. There is also a Makefile provided, created by the candidate. The c library files "inttypes.h", "time.h" and "math.h" were found on the system's directory '/usr/include/'.
 
 Instructions
 
