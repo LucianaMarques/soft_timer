@@ -25,12 +25,46 @@ Then, type "make". This should create a soft_timer binary file.
 Then execute the created file.
 To exclude the binary file after execution, just type make clean.
 
-cd "directory"
+$cd "directory"
 
-make
+$make
 
-./soft_timer
+$./soft_timer
 
-make clean
+$make clean
+
+## Project's General Overview
+
+This section discusses the implementation of the hypotetical MCU's behavior and which functions were used to do so. For a detailed description of all the functions in the project, please refer to the next section.
+
+### MCU's behavior
+
+The MCU's behavior is defined accordingly to the main() function defined in the source file soft_timer.c. It can be described in the following simple steps:
+
+* Define the physical timer characteristics, that is, define the Prescaler, the reload value, whether it repeats or not and if IRQ handler if Timeout IRQ handler is required. 
+
+* Setup the system's clock frequency
+
+* Initialize the soft timer module (enables the creation of soft timers)
+
+* Initialize all timers (both physical and soft) 
+
+* Stop all timers
+
+* Destroy all soft timers
+
+All these steps are defined in the main() function. 
+
+### Project's Functions and files 
+
+In the header file soft_timer.h, there were some declared function which were expected to be written in the source file.
+
+The sorce file soft_timer.c contains all the required functions in its header, plus some private functions used to implement the hypotetical MCU's behavior.
+
+Below there are the body and the description of all these functions:
+
+### Global functions
+
+### Private functions
 
 
